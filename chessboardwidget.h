@@ -18,7 +18,7 @@ private slots:
     void handleButton();
 private:
     QPushButton *restartButton;
-    ChessboardWidget *m_chessboardwidget;
+    ChessboardWidget *m_chessboardwidget; suuuuuuuuuuuuui
 signals:
     void buttonpressed();
 };
