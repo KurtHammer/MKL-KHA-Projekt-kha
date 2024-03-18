@@ -10,9 +10,8 @@ class Client: public QObject
 {
     Q_OBJECT
     public:
-      int Clientn;
       bool neustart;
-      Client(ChessboardWidget *widget,QObject* parent = 0);
+      Client(/*ChessboardWidget *widget,*/QObject* parent = 0);
       ~Client();
       void start( QString address, quint16 port );
       void sendData(const QString &data);
