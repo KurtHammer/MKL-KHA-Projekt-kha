@@ -12,15 +12,19 @@ class Server: public QObject
 public:
     Server(QObject * parent = 0);
     ~Server();
+    int Index;
+    void sendToClient(QTcpSocket *socket, const QString &message);
+    void sendMessageToClient(int clientIndex, const QString &message);
 
 public slots:
     void acceptConnection();
     void startRead();
     void handlebuttonpress();
     void Neustart(int cl);
+
 private:
     QTcpServer *server;
-    QTcpSocket* socket;
+    QTcpSocket *socket;
     QList<QTcpSocket*> clients;
 };
 
