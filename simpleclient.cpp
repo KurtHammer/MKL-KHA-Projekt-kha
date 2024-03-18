@@ -1,28 +1,19 @@
 #include "simpleclient.h"
 #include "chessboardwidget.h"
-#include <iostream>
 #include <QSettings>
 #include <QCoreApplication>
 
-Client::Client(ChessboardWidget *widget, QObject *parent): QObject(parent), Clientn(0), chessboardwidget(widget) {
+Client::Client(/*ChessboardWidget *widget,*/ QObject *parent): QObject(parent)/*, chessboardwidget(widget) */{
 
-   QSettings settings("MyCompany", "MyApp");
-   Clientn = settings.value("ClientNumber", 0).toInt();
-   ++Clientn; // Erhöhe den Wert von Clientn um eins
-   settings.setValue("ClientNumber", Clientn);
-   qDebug() << Clientn;
    client=new QTcpSocket;
    connect(client, SIGNAL(readyRead()), this, SLOT(startRead()));
    connect(chessboardwidget, &ChessboardWidget::buttonpressed, this, &Client::setneustart);
+   connect(client, SIGNAL(readyRead()), this, SLOT(startRead()));
 }
 
 Client::~Client(){
-  QSettings settings("MyCompany", "MyApp");
   client->close();
   client->deleteLater();
-  Clientn = 0;
-  settings.setValue("ClientNumber", Clientn);
-  qDebug() << "Clientn im Destruktor: " << Clientn; // Debug-Ausgabe für Clientn im Destruktor
 }
 
 
@@ -37,23 +28,20 @@ void Client::start( QString address, quint16 port )
 }
 
 void Client::startTransfer(){
-  qDebug() << "verbindung"<< Clientn;
-  sendData(NULL);
+  sendData("hallo server");
   return;
 }
 
 
 void Client::startRead(){
+    QTcpSocket *sender = qobject_cast<QTcpSocket*>(QObject::sender());
+    QByteArray buffer = sender->readAll();
 
-  char buffer[1024] = {0};
-  QTcpSocket *sender = (QTcpSocket* ) QObject::sender();
-  sender->read(buffer, sender->bytesAvailable());
+    // Empfangenen Daten zum Debuggen ausgeben
+    qDebug() << "Received data from server:" << buffer;
 
-  //Empfangenen String zum Debuggen ausgeben
-  qDebug() << buffer;
-
-  //Empfangenen String auswerten
-  //ToDo
+    // Empfangene Daten auswerten
+    // ToDo: Implementieren Sie die Logik, um die empfangenen Daten zu verarbeiten
 }
 
 void Client::setneustart(){
@@ -67,8 +55,7 @@ void Client::setneustart(){
 
 void Client::sendData(const QString &data) {
     if (client->state() == QAbstractSocket::ConnectedState) {
-        QString combinedData = QString::number(Clientn) + "/" + data; // Kombiniere Clientn und data zu einem String
-        client->write(combinedData.toUtf8());
+        client->write(data.toUtf8());
     }
 }
 
